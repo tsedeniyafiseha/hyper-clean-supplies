@@ -6,12 +6,21 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const wishlist = await prisma.wishlist.findMany({
-      where: { userId: Number(session.user.id) },
+      where: { userId: user.id },
       include: {
         product: {
           select: {
@@ -39,15 +48,24 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const { productId } = await request.json();
 
     const wishlistItem = await prisma.wishlist.create({
       data: {
-        userId: Number(session.user.id),
+        userId: user.id,
         productId: Number(productId),
       },
       include: {
@@ -76,8 +94,17 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const { productId } = await request.json();
@@ -85,7 +112,7 @@ export async function DELETE(request: NextRequest) {
     await prisma.wishlist.delete({
       where: {
         userId_productId: {
-          userId: Number(session.user.id),
+          userId: user.id,
           productId: Number(productId),
         }
       }

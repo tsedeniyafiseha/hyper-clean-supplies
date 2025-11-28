@@ -44,8 +44,18 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get user ID from database
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const productId = parseInt(params.id);
@@ -60,7 +70,7 @@ export async function POST(
         data: {
           rating,
           comment,
-          userId: Number(session.user.id),
+          userId: user.id,
           productId,
         },
         include: {
