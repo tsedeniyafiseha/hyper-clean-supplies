@@ -9,8 +9,18 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get user ID from database using email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -20,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
-        where: { userId: Number(session.user.id) },
+        where: { userId: user.id },
         include: {
           items: {
             select: {
@@ -36,7 +46,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.order.count({ where: { userId: Number(session.user.id) } }),
+      prisma.order.count({ where: { userId: user.id } }),
     ]);
 
     return NextResponse.json({
