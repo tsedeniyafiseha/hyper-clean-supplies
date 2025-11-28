@@ -6,11 +6,21 @@ import { redirect } from "next/navigation";
 export default async function AccountOrdersPage() {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || !session.user.id) {
+  if (!session || !session.user || !session.user.email) {
     redirect("/signin");
   }
 
-  const userId = Number(session.user.id);
+  // Get user ID from database using email
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!user) {
+    redirect("/signin");
+  }
+
+  const userId = user.id;
 
   const orders = await prisma.order.findMany({
     where: { userId },
