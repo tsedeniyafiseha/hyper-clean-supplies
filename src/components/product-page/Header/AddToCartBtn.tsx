@@ -5,32 +5,48 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { RootState } from "@/lib/store";
 import { Product } from "@/types/product.types";
 import React from "react";
+import { trackAddToCart } from "@/lib/analytics";
 
-const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
+type Props = {
+  data: Product & { quantity: number };
+  disabled?: boolean;
+};
+
+const AddToCartBtn = ({ data, disabled }: Props) => {
   const dispatch = useAppDispatch();
   const { sizeSelection, colorSelection } = useAppSelector(
     (state: RootState) => state.products
   );
 
+  const handleClick = () => {
+    dispatch(
+      addToCart({
+        id: data.id,
+        name: data.title,
+        srcUrl: data.srcUrl,
+        price: data.price,
+        attributes: [sizeSelection, colorSelection.name],
+        discount: data.discount,
+        quantity: data.quantity,
+      })
+    );
+
+    trackAddToCart({
+      item_id: data.id,
+      item_name: data.title,
+      price: data.price,
+      quantity: data.quantity,
+    });
+  };
+
   return (
     <button
       type="button"
-      className="bg-black w-full ml-3 sm:ml-5 rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white hover:bg-black/80 transition-all"
-      onClick={() =>
-        dispatch(
-          addToCart({
-            id: data.id,
-            name: data.title,
-            srcUrl: data.srcUrl,
-            price: data.price,
-            attributes: [sizeSelection, colorSelection.name],
-            discount: data.discount,
-            quantity: data.quantity,
-          })
-        )
-      }
+      disabled={disabled}
+      className="bg-black hover:bg-gray-800 w-full ml-3 sm:ml-5 rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white transition-all disabled:opacity-60"
+      onClick={handleClick}
     >
-      Add to Cart
+      {disabled ? "Out of Stock" : "Add to Cart"}
     </button>
   );
 };

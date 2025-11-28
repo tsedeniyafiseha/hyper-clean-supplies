@@ -18,7 +18,7 @@ export type MenuListProps = {
 export function MenuList({ data, label }: MenuListProps) {
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="font-normal px-3">
+      <NavigationMenuTrigger className="font-semibold px-3 text-gray-900 hover:text-sky-600 hover:bg-gray-50 bg-transparent data-[state=open]:bg-gray-50">
         {label}
       </NavigationMenuTrigger>
       <NavigationMenuContent>

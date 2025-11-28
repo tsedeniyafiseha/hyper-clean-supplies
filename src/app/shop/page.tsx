@@ -1,5 +1,4 @@
 import BreadcrumbShop from "@/components/shop-page/BreadcrumbShop";
-
 import {
   Select,
   SelectContent,
@@ -10,7 +9,6 @@ import {
 import MobileFilters from "@/components/shop-page/filters/MobileFilters";
 import Filters from "@/components/shop-page/filters";
 import { FiSliders } from "react-icons/fi";
-import { newArrivalsData, relatedProductData, topSellingData } from "../page";
 import ProductCard from "@/components/common/ProductCard";
 import {
   Pagination,
@@ -21,8 +19,57 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { getAllProducts } from "@/lib/products";
+import type { Metadata } from "next";
 
-export default function ShopPage() {
+export const metadata: Metadata = {
+  title: "Shop All Products",
+  description:
+    "Browse all professional cleaning supplies at Hyper Cleaning Supplies, including chemicals, bathroom care, kitchen care, floor care, dispensers, gloves, and paper products.",
+};
+
+type SearchParams = {
+  minPrice?: string;
+  maxPrice?: string;
+  brands?: string;
+  sort?: string;
+};
+
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const allProducts = await getAllProducts();
+  
+  // Apply price filters
+  let filteredProducts = allProducts;
+  
+  const minPrice = searchParams.minPrice ? parseFloat(searchParams.minPrice) : 0;
+  const maxPrice = searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : Infinity;
+  
+  filteredProducts = filteredProducts.filter(product => {
+    const price = product.price;
+    return price >= minPrice && price <= maxPrice;
+  });
+  
+  // Apply brand filters
+  if (searchParams.brands) {
+    const selectedBrands = searchParams.brands.toLowerCase().split(',');
+    // For now, we'll skip brand filtering since we don't have brand data in products
+    // In a real app, you'd filter by product.brand
+  }
+  
+  // Apply sorting
+  if (searchParams.sort === 'low-price') {
+    filteredProducts.sort((a, b) => a.price - b.price);
+  } else if (searchParams.sort === 'high-price') {
+    filteredProducts.sort((a, b) => b.price - a.price);
+  }
+  
+  const productsToShow = filteredProducts.slice(0, 12);
+  const totalProducts = filteredProducts.length;
+
   return (
     <main className="pb-20">
       <div className="max-w-frame mx-auto px-4 xl:px-0">
@@ -39,12 +86,12 @@ export default function ShopPage() {
           <div className="flex flex-col w-full space-y-5">
             <div className="flex flex-col lg:flex-row lg:justify-between">
               <div className="flex items-center justify-between">
-                <h1 className="font-bold text-2xl md:text-[32px]">Casual</h1>
+                <h1 className="font-bold text-2xl md:text-[32px]">All Products</h1>
                 <MobileFilters />
               </div>
               <div className="flex flex-col sm:items-center sm:flex-row">
                 <span className="text-sm md:text-base text-black/60 mr-3">
-                  Showing 1-10 of 100 Products
+                  Showing {productsToShow.length} of {totalProducts} Products
                 </span>
                 <div className="flex items-center">
                   Sort by:{" "}
@@ -61,15 +108,17 @@ export default function ShopPage() {
                 </div>
               </div>
             </div>
-            <div className="w-full grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-              {[
-                ...relatedProductData.slice(1, 4),
-                ...newArrivalsData.slice(1, 4),
-                ...topSellingData.slice(1, 4),
-              ].map((product) => (
-                <ProductCard key={product.id} data={product} />
-              ))}
-            </div>
+            {productsToShow.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No products found matching your filters.</p>
+              </div>
+            ) : (
+              <div className="w-full grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+                {productsToShow.map((product) => (
+                  <ProductCard key={product.id} data={product} />
+                ))}
+              </div>
+            )}
             <hr className="border-t-black/10" />
             <Pagination className="justify-between">
               <PaginationPrevious href="#" className="border border-black/10" />

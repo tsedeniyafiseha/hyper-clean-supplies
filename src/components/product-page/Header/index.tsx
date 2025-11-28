@@ -1,94 +1,108 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import PhotoSection from "./PhotoSection";
 import { Product } from "@/types/product.types";
 import { integralCF } from "@/styles/fonts";
 import { cn } from "@/lib/utils";
 import Rating from "@/components/ui/Rating";
-import ColorSelection from "./ColorSelection";
 import SizeSelection from "./SizeSelection";
 import AddToCardSection from "./AddToCardSection";
+import { trackViewItem } from "@/lib/analytics";
+
+const brands = ["ECOLAB", "CLOROX", "LYSOL", "MR. CLEAN", "SWIFFER", "BIO-ZYME", "MATTHEWS", "LIVI"];
+const getBrand = (id: number): string => brands[id % brands.length];
 
 const Header = ({ data }: { data: Product }) => {
+  const brand = getBrand(data.id);
+  
+  useEffect(() => {
+    trackViewItem({
+      item_id: data.id,
+      item_name: data.title,
+      price: data.price,
+    });
+  }, [data.id, data.title, data.price]);
+
+  const discountedPrice = data.discount.percentage > 0
+    ? Math.round(data.price - (data.price * data.discount.percentage) / 100)
+    : data.discount.amount > 0
+    ? data.price - data.discount.amount
+    : data.price;
+
+  const hasDiscount = data.discount.percentage > 0 || data.discount.amount > 0;
+
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div>
-          <PhotoSection data={data} />
-        </div>
-        <div>
-          <h1
-            className={cn([
-              integralCF.className,
-              "text-2xl md:text-[40px] md:leading-[40px] mb-3 md:mb-3.5 capitalize",
-            ])}
-          >
-            {data.title}
-          </h1>
-          <div className="flex items-center mb-3 sm:mb-3.5">
-            <Rating
-              initialValue={data.rating}
-              allowFraction
-              SVGclassName="inline-block"
-              emptyClassName="fill-gray-50"
-              size={25}
-              readonly
-            />
-            <span className="text-black text-xs sm:text-sm ml-[11px] sm:ml-[13px] pb-0.5 sm:pb-0">
-              {data.rating.toFixed(1)}
-              <span className="text-black/60">/5</span>
-            </span>
-          </div>
-          <div className="flex items-center space-x-2.5 sm:space-x-3 mb-5">
-            {data.discount.percentage > 0 ? (
-              <span className="font-bold text-black text-2xl sm:text-[32px]">
-                {`$${Math.round(
-                  data.price - (data.price * data.discount.percentage) / 100
-                )}`}
-              </span>
-            ) : data.discount.amount > 0 ? (
-              <span className="font-bold text-black text-2xl sm:text-[32px]">
-                {`$${data.price - data.discount.amount}`}
-              </span>
-            ) : (
-              <span className="font-bold text-black text-2xl sm:text-[32px]">
-                ${data.price}
-              </span>
-            )}
-            {data.discount.percentage > 0 && (
-              <span className="font-bold text-black/40 line-through text-2xl sm:text-[32px]">
-                ${data.price}
-              </span>
-            )}
-            {data.discount.amount > 0 && (
-              <span className="font-bold text-black/40 line-through text-2xl sm:text-[32px]">
-                ${data.price}
-              </span>
-            )}
-            {data.discount.percentage > 0 ? (
-              <span className="font-medium text-[10px] sm:text-xs py-1.5 px-3.5 rounded-full bg-[#FF3333]/10 text-[#FF3333]">
-                {`-${data.discount.percentage}%`}
-              </span>
-            ) : (
-              data.discount.amount > 0 && (
-                <span className="font-medium text-[10px] sm:text-xs py-1.5 px-3.5 rounded-full bg-[#FF3333]/10 text-[#FF3333]">
-                  {`-$${data.discount.amount}`}
-                </span>
-              )
-            )}
-          </div>
-          <p className="text-sm sm:text-base text-black/60 mb-5">
-            This graphic t-shirt which is perfect for any occasion. Crafted from
-            a soft and breathable fabric, it offers superior comfort and style.
-          </p>
-          <hr className="h-[1px] border-t-black/10 mb-5" />
-          <ColorSelection />
-          <hr className="h-[1px] border-t-black/10 my-5" />
-          <SizeSelection />
-          <hr className="hidden md:block h-[1px] border-t-black/10 my-5" />
-          <AddToCardSection data={data} />
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <PhotoSection data={data} />
       </div>
-    </>
+      <div>
+        {/* Brand */}
+        <p className="text-sky-500 text-sm font-bold mb-2">{brand}</p>
+        
+        {/* Title */}
+        <h1 className={cn([integralCF.className, "text-2xl md:text-3xl mb-3 text-gray-900"])}>
+          {data.title}
+        </h1>
+        
+        {/* Rating */}
+        <div className="flex items-center mb-3">
+          <Rating
+            initialValue={data.rating}
+            allowFraction
+            SVGclassName="inline-block"
+            emptyClassName="fill-gray-200"
+            size={20}
+            readonly
+          />
+          <span className="text-gray-600 text-sm ml-2">
+            {data.rating.toFixed(1)}/5
+          </span>
+        </div>
+        
+        {/* Stock Status */}
+        <p className="text-sm text-gray-600 mb-4">
+          {data.stock !== undefined && data.stock <= 0
+            ? "Out of stock"
+            : data.stock !== undefined && data.stock <= 5
+            ? `Only ${data.stock} left in stock`
+            : "In stock"}
+        </p>
+        
+        {/* Price */}
+        <div className="flex items-center gap-3 mb-6">
+          {hasDiscount && (
+            <span className="text-gray-400 text-lg line-through">${data.price.toFixed(2)} NZD</span>
+          )}
+          <span className="text-green-600 font-bold text-2xl">
+            ${discountedPrice.toFixed(2)} NZD
+          </span>
+          {hasDiscount && (
+            <span className="bg-sky-500 text-white text-xs font-bold px-2 py-1 rounded">
+              -{data.discount.percentage > 0 ? `${data.discount.percentage}%` : `$${data.discount.amount}`}
+            </span>
+          )}
+        </div>
+        
+        {/* Description */}
+        <p className="text-sm text-gray-600 mb-6">
+          Professional-grade cleaning solution designed for maximum effectiveness.
+          Formulated with high-quality ingredients to deliver superior cleaning power
+          while being safe for use in commercial and residential environments.
+        </p>
+        
+        <hr className="border-t-gray-200 mb-6" />
+        
+        {/* Size Selection */}
+        <SizeSelection />
+        
+        <hr className="border-t-gray-200 my-6" />
+        
+        {/* Add to Cart */}
+        <AddToCardSection data={data} />
+      </div>
+    </div>
   );
 };
 

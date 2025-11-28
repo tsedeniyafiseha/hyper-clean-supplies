@@ -8,27 +8,27 @@ import {
 import Link from "next/link";
 import { MdKeyboardArrowRight } from "react-icons/md";
 
-type DressStyle = {
+type ProductType = {
   title: string;
   slug: string;
 };
 
-const dressStylesData: DressStyle[] = [
+const productTypesData: ProductType[] = [
   {
-    title: "Casual",
-    slug: "/shop?style=casual",
+    title: "Eco-Friendly",
+    slug: "/shop?type=eco-friendly",
   },
   {
-    title: "Formal",
-    slug: "/shop?style=formal",
+    title: "Industrial Strength",
+    slug: "/shop?type=industrial",
   },
   {
-    title: "Party",
-    slug: "/shop?style=party",
+    title: "Concentrated",
+    slug: "/shop?type=concentrated",
   },
   {
-    title: "Gym",
-    slug: "/shop?style=gym",
+    title: "Disinfectant",
+    slug: "/shop?type=disinfectant",
   },
 ];
 
@@ -37,17 +37,17 @@ const DressStyleSection = () => {
     <Accordion type="single" collapsible defaultValue="filter-style">
       <AccordionItem value="filter-style" className="border-none">
         <AccordionTrigger className="text-black font-bold text-xl hover:no-underline p-0 py-0.5">
-          Dress Style
+          Product Type
         </AccordionTrigger>
         <AccordionContent className="pt-4 pb-0">
           <div className="flex flex-col text-black/60 space-y-0.5">
-            {dressStylesData.map((dStyle, idx) => (
+            {productTypesData.map((pType, idx) => (
               <Link
                 key={idx}
-                href={dStyle.slug}
+                href={pType.slug}
                 className="flex items-center justify-between py-2"
               >
-                {dStyle.title} <MdKeyboardArrowRight />
+                {pType.title} <MdKeyboardArrowRight />
               </Link>
             ))}
           </div>

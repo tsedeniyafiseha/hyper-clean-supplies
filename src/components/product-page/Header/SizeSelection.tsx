@@ -15,10 +15,10 @@ const SizeSelection = () => {
   return (
     <div className="flex flex-col">
       <span className="text-sm sm:text-base text-black/60 mb-4">
-        Choose Size
+        Choose Volume
       </span>
       <div className="flex items-center flex-wrap lg:space-x-3">
-        {["Small", "Medium", "Large", "X-Large"].map((size, index) => (
+        {["500ml", "1L", "2L", "5L"].map((size, index) => (
           <button
             key={index}
             type="button"

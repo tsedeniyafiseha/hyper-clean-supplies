@@ -1,8 +1,8 @@
 [![Shopco Screenshot](https://github.com/mohammadoftadeh/repo-assets/blob/main/shopco-cover.png?raw=true)](https://next-ecommerce-shopco.vercel.app/)
 
-# Shopco
+# Hyper Cleaning Supplies
 
-Shopco is an open-source project that converts a Figma design of an e-commerce website into a fully responsive front-end application. It utilizes **Next.js 14 App Router**, **TypeScript**, **Tailwind CSS**, **Redux**, **Framer Motion**, and **ShadCN UI** to deliver a modern, scalable, and optimized solution based on industry standards.
+Hyper Cleaning Supplies is a fully responsive e-commerce website for professional cleaning materials and supplies. It utilizes **Next.js 14 App Router**, **TypeScript**, **Tailwind CSS**, **Redux**, **Framer Motion**, and **ShadCN UI** to deliver a modern, scalable, and optimized solution based on industry standards.
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ Shopco is an open-source project that converts a Figma design of an e-commerce w
 
 ## Overview
 
-Shopco bridges the gap between design and development by converting Figma designs into production-ready code. The project follows best practices for **SEO**, **performance optimization**, and **accessibility**, making it a perfect foundation for developers looking to create scalable and maintainable e-commerce front-ends.
+Hyper Cleaning Supplies is an e-commerce platform specializing in professional cleaning materials and supplies. The project follows best practices for **SEO**, **performance optimization**, and **accessibility**, making it a perfect foundation for businesses looking to sell cleaning products online. It features a comprehensive product catalog including cleaning chemicals, bathroom care, kitchen care, floor care, dispensers, gloves, and paper products.
 
 ## Demo
 

@@ -1,118 +1,138 @@
-import AnimatedCounter from "@/components/ui/AnimatedCounter";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { integralCF } from "@/styles/fonts";
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import React from "react";
-import * as motion from "framer-motion/client";
+import Image from "next/image";
+import React, { useState, useEffect } from "react";
+
+const heroSlides = [
+  {
+    image: "/images/hero1.jpg",
+    title: "Low Noise Acrylic Packaging Tape",
+    subtitle: "Noise reduction design",
+  },
+  {
+    image: "/images/hero2.jpg",
+    title: "Professional Cleaning Solutions",
+    subtitle: "Industrial grade quality",
+  },
+  {
+    image: "/images/hero3.jpg",
+    title: "Premium Dispensers",
+    subtitle: "Efficient and reliable",
+  },
+];
 
 const Header = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <header className="bg-[#F2F0F1] pt-10 md:pt-24 overflow-hidden">
-      <div className="md:max-w-frame mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-        <section className="max-w-frame px-4">
-          <motion.h2
-            initial={{ y: "100px", opacity: 0, rotate: 10 }}
-            whileInView={{ y: "0", opacity: 1, rotate: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className={cn([
-              integralCF.className,
-              "text-4xl lg:text-[64px] lg:leading-[64px] mb-5 lg:mb-8",
-            ])}
-          >
-            FIND CLOTHES THAT MATCHES YOUR STYLE
-          </motion.h2>
-          <motion.p
-            initial={{ y: "100px", opacity: 0 }}
-            whileInView={{ y: "0", opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-black/60 text-sm lg:text-base mb-6 lg:mb-8 max-w-[545px]"
-          >
-            Browse through our diverse range of meticulously crafted garments,
-            designed to bring out your individuality and cater to your sense of
-            style.
-          </motion.p>
-          <motion.div
-            initial={{ y: "100px", opacity: 0 }}
-            whileInView={{ y: "0", opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 1, duration: 0.6 }}
-          >
-            <Link
-              href="/shop"
-              className="w-full md:w-52 mb-5 md:mb-12 inline-block text-center bg-black hover:bg-black/80 transition-all text-white px-14 py-4 rounded-full hover:animate-pulse"
-            >
-              Shop Now
-            </Link>
-          </motion.div>
-          <motion.div
-            initial={{ y: "100px", opacity: 0 }}
-            whileInView={{ y: "0", opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 1.5, duration: 0.6 }}
-            className="flex md:h-full md:max-h-11 lg:max-h-[52px] xl:max-h-[68px] items-center justify-center md:justify-start flex-wrap sm:flex-nowrap md:space-x-3 lg:space-x-6 xl:space-x-8 md:mb-[116px]"
-          >
-            <div className="flex flex-col">
-              <span className="font-bold text-2xl md:text-xl lg:text-3xl xl:text-[40px] xl:mb-2">
-                <AnimatedCounter from={0} to={200} />+
-              </span>
-              <span className="text-xs xl:text-base text-black/60 text-nowrap">
-                International Brands
-              </span>
+    <header className="bg-white py-6">
+      <div className="max-w-frame mx-auto px-4 xl:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Main Hero - Carousel */}
+          <div className="lg:col-span-2 relative rounded-2xl overflow-hidden min-h-[450px] bg-gradient-to-r from-amber-50 via-orange-50 to-white">
+            {heroSlides.map((slide, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-1000 ${
+                  index === currentSlide ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {/* Image on right side - smaller and blended */}
+                <div className="absolute right-0 top-0 w-1/2 h-full">
+                  <Image
+                    src={slide.image}
+                    alt={slide.title}
+                    fill
+                    className="object-contain object-right"
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-50 via-orange-50/60 to-transparent" />
+                </div>
+
+                {/* Content on left */}
+                <div className="relative z-10 h-full flex flex-col justify-center p-8 md:p-12 max-w-lg">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                    {slide.title}
+                  </h1>
+                  <p className="text-gray-600 text-lg mb-2">{slide.subtitle}</p>
+                  
+                  <ul className="space-y-3 mb-8">
+                    <li className="flex items-center gap-3 text-gray-700">
+                      <span className="w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      Specialty brushes and mops
+                    </li>
+                    <li className="flex items-center gap-3 text-gray-700">
+                      <span className="w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      Durable construction
+                    </li>
+                    <li className="flex items-center gap-3 text-gray-700">
+                      <span className="w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      Durable materials
+                    </li>
+                  </ul>
+                  
+                  <Link
+                    href="/shop"
+                    className="inline-flex items-center justify-center w-fit bg-sky-500 hover:bg-sky-600 text-white font-semibold px-8 py-3 rounded transition-all"
+                  >
+                    Shop now
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Right Side - 2 Cards */}
+          <div className="flex flex-col gap-4">
+            {/* Card 1 */}
+            <div className="relative rounded-2xl overflow-hidden h-[217px] bg-gradient-to-r from-white to-sky-50">
+              <div className="absolute right-0 top-0 w-1/2 h-full">
+                <Image src="/images/products/cleaner1.jpg" alt="Chemicals" fill className="object-contain" />
+              </div>
+              <div className="relative z-10 p-5 h-full flex flex-col justify-center">
+                <p className="text-gray-500 text-xs mb-1">For Superior Results</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Chemicals</h3>
+                <Link href="/shop/category/cleaning-chemicals" className="inline-block bg-sky-500 hover:bg-sky-600 text-white font-semibold px-5 py-2 rounded text-sm w-fit">
+                  Shop now
+                </Link>
+              </div>
             </div>
-            <Separator
-              className="ml-6 md:ml-0 h-12 md:h-full bg-black/10"
-              orientation="vertical"
-            />
-            <div className="flex flex-col ml-6 md:ml-0">
-              <span className="font-bold text-2xl md:text-xl lg:text-3xl xl:text-[40px] xl:mb-2">
-                <AnimatedCounter from={0} to={2000} />+
-              </span>
-              <span className="text-xs xl:text-base text-black/60 text-nowrap">
-                High-Quality Products
-              </span>
+
+            {/* Card 2 */}
+            <div className="relative rounded-2xl overflow-hidden h-[217px] bg-gradient-to-r from-white to-cyan-50">
+              <div className="absolute right-0 top-0 w-1/2 h-full">
+                <Image src="/images/products/gloves.jpg" alt="Gloves" fill className="object-contain" />
+              </div>
+              <div className="relative z-10 p-5 h-full flex flex-col justify-center">
+                <p className="text-gray-500 text-xs mb-1">Superior Protection and Durability</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">NITRILE GLOVES</h3>
+                <Link href="/shop/category/gloves" className="inline-block bg-sky-500 hover:bg-sky-600 text-white font-semibold px-5 py-2 rounded text-sm w-fit">
+                  Shop Now
+                </Link>
+              </div>
             </div>
-            <Separator
-              className="hidden sm:block sm:h-12 md:h-full ml-6 md:ml-0 bg-black/10"
-              orientation="vertical"
-            />
-            <div className="flex flex-col w-full text-center sm:w-auto sm:text-left mt-3 sm:mt-0 sm:ml-6 md:ml-0">
-              <span className="font-bold text-2xl md:text-xl lg:text-3xl xl:text-[40px] xl:mb-2">
-                <AnimatedCounter from={0} to={3000} />+
-              </span>
-              <span className="text-xs xl:text-base text-black/60 text-nowrap">
-                Happy Customers
-              </span>
-            </div>
-          </motion.div>
-        </section>
-        <motion.section
-          initial={{ y: "100px", opacity: 0, rotate: 10 }}
-          whileInView={{ y: "0", opacity: 1, rotate: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 2.3, duration: 0.8 }}
-          className="relative md:px-4 min-h-[448px] md:min-h-[428px] bg-cover bg-top xl:bg-[center_top_-1.6rem] bg-no-repeat bg-[url('/images/header-res-homepage.png')] md:bg-[url('/images/header-homepage.png')]"
-        >
-          <Image
-            priority
-            src="/icons/big-star.svg"
-            height={104}
-            width={104}
-            alt="big star"
-            className="absolute right-7 xl:right-0 top-12 max-w-[76px] max-h-[76px] lg:max-w-24 lg:max-h-max-w-24 xl:max-w-[104px] xl:max-h-[104px] animate-[spin_4s_infinite]"
-          />
-          <Image
-            priority
-            src="/icons/small-star.svg"
-            height={56}
-            width={56}
-            alt="small star"
-            className="absolute left-7 md:left-0 top-36 sm:top-64 md:top-44 lg:top-56 max-w-11 max-h-11 md:max-w-14 md:max-h-14 animate-[spin_3s_infinite]"
-          />
-        </motion.section>
+          </div>
+        </div>
       </div>
     </header>
   );

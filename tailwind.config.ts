@@ -73,6 +73,11 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        brand: {
+          DEFAULT: "#000000",
+          light: "#333333",
+          dark: "#000000",
+        },
       },
       keyframes: {
         "accordion-down": {

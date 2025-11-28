@@ -34,7 +34,7 @@ const ColorSelection = () => {
   return (
     <div className="flex flex-col">
       <span className="text-sm sm:text-base text-black/60 mb-4">
-        Select Colors
+        Select Type
       </span>
       <div className="flex items-center flex-wrap space-x-3 sm:space-x-4">
         {colorsData.map((color, index) => (

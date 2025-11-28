@@ -65,7 +65,7 @@ const Reviews = ({ data }: ReviewsProps) => {
               transition={{ delay: 0.6, duration: 0.6 }}
               className={cn([
                 integralCF.className,
-                "text-[32px] leading-[36px] md:text-5xl capitalize mr-auto",
+                "text-[32px] leading-[36px] md:text-5xl capitalize mr-auto text-black",
               ])}
             >
               OUR HAPPY CUSTOMERS

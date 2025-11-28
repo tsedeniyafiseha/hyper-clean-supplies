@@ -9,15 +9,79 @@ import { integralCF } from "@/styles/fonts";
 import { FaArrowRight } from "react-icons/fa6";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { TbBasketExclamation } from "react-icons/tb";
-import React from "react";
+import React, { useState } from "react";
 import { RootState } from "@/lib/store";
 import { useAppSelector } from "@/lib/hooks/redux";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 export default function CartPage() {
   const { cart, totalPrice, adjustedTotalPrice } = useAppSelector(
     (state: RootState) => state.carts
   );
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleCheckout = async () => {
+    setError("");
+
+    if (!session) {
+      router.push("/signin");
+      return;
+    }
+
+    if (!cart || cart.items.length === 0) {
+      setError("Your cart is empty");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      trackBeginCheckout(
+        cart.items.map((item) => ({
+          item_id: item.id,
+          item_name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        adjustedTotalPrice
+      );
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cart.items.map((item) => ({
+            id: item.id,
+            name: item.name,
+            srcUrl: item.srcUrl,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          adjustedTotalPrice,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.url) {
+        setError(data.error || "Failed to start checkout");
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="pb-20">
@@ -79,6 +143,9 @@ export default function CartPage() {
                     </span>
                   </div>
                 </div>
+                {error && (
+                  <p className="text-sm text-red-600">{error}</p>
+                )}
                 <div className="flex space-x-3">
                   <InputGroup className="bg-[#F0F0F0]">
                     <InputGroup.Text>
@@ -93,16 +160,18 @@ export default function CartPage() {
                   </InputGroup>
                   <Button
                     type="button"
-                    className="bg-black rounded-full w-full max-w-[119px] h-[48px]"
+                    className="bg-black hover:bg-gray-800 rounded-full w-full max-w-[119px] h-[48px]"
                   >
                     Apply
                   </Button>
                 </div>
                 <Button
                   type="button"
-                  className="text-sm md:text-base font-medium bg-black rounded-full w-full py-4 h-[54px] md:h-[60px] group"
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  className="text-sm md:text-base font-medium bg-black hover:bg-gray-800 rounded-full w-full py-4 h-[54px] md:h-[60px] group disabled:opacity-60"
                 >
-                  Go to Checkout{" "}
+                  {loading ? "Redirecting..." : "Go to Checkout"}{" "}
                   <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />
                 </Button>
               </div>

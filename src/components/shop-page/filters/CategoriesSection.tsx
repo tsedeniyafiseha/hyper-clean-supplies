@@ -9,24 +9,36 @@ type Category = {
 
 const categoriesData: Category[] = [
   {
-    title: "T-shirts",
-    slug: "/shop?category=t-shirts",
+    title: "Cleaning Chemicals",
+    slug: "/shop?category=cleaning-chemicals",
   },
   {
-    title: "Shorts",
-    slug: "/shop?category=shorts",
+    title: "Bathroom Care",
+    slug: "/shop?category=bathroom-care",
   },
   {
-    title: "Shirts",
-    slug: "/shop?category=shirts",
+    title: "Kitchen Care",
+    slug: "/shop?category=kitchen-care",
   },
   {
-    title: "Hoodie",
-    slug: "/shop?category=hoodie",
+    title: "Floor Care",
+    slug: "/shop?category=floor-care",
   },
   {
-    title: "Jeans",
-    slug: "/shop?category=jeans",
+    title: "Window Care",
+    slug: "/shop?category=window-care",
+  },
+  {
+    title: "Dispensers",
+    slug: "/shop?category=dispensers",
+  },
+  {
+    title: "Gloves",
+    slug: "/shop?category=gloves",
+  },
+  {
+    title: "Paper Products",
+    slug: "/shop?category=paper-products",
   },
 ];
 
